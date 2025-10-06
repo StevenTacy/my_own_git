@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -49,26 +50,25 @@ func main() {
 		}
 
 		fmt.Println("Initialized git directory")
-		os.Exit(0)
 
-	// case "cat-file":
-	// 	if len(os.Args) < 4 {
-	// 		handleError(errors.New("usage: mygit cat-file -p [<args>...]"))
-	// 		os.Exit(1)
-	// 	}
+	case "cat-file":
+		if len(os.Args) < 4 {
+			handleError(errors.New("usage: mygit cat-file -p [<args>...]"))
+			os.Exit(1)
+		}
 
-	// 	if os.Args[2] != "-p" {
-	// 		handleError(errors.New("usage: mygit cat-file -p [<args>...]"))
-	// 		os.Exit(1)
-	// 	}
+		if os.Args[2] != "-p" {
+			handleError(errors.New("usage: mygit cat-file -p [<args>...]"))
+			os.Exit(1)
+		}
 
-	// 	fileContent, err := readContentObject(os.Args[3])
-	// 	if err != nil {
-	// 		handleError(err)
-	// 		os.Exit(1)
-	// 	}
+		fileContent, err := readContentObject(os.Args[3])
+		if err != nil {
+			handleError(err)
+			os.Exit(1)
+		}
 
-	// 	fmt.Printf("%s\n", content)
+		fmt.Printf("%s\n", fileContent)
 
 	// case "hash-object":
 	// 	if len(os.Args) != 4 {
@@ -112,6 +112,10 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Unknown command %s\n", command)
 		os.Exit(1)
 	}
+}
+
+func handleError(err error) {
+	fmt.Fprintf(os.Stderr, err.Error()+"\n")
 }
 
 /**
